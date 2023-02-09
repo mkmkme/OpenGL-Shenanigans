@@ -1,4 +1,5 @@
 [requires]
+glu/system
 sdl/[^2.26.1]
 
 [generators]

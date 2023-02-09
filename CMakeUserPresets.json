@@ -31,7 +31,8 @@
         {
             "name": "VSCompiler Debug",
             "configurePreset": "VSCompiler",
-            "configuration": "Debug"
+            "configuration": "Debug",
+            "verbose": false
         },
         {
             "name": "VSCompiler Release",
