@@ -1,0 +1,26 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Conan install",
+            "type": "shell",
+            "command": "conan",
+            "args": [
+                "install",
+                "${workspaceFolder}",
+                "--profile:host=default",
+                "--profile:build=default",
+                "--install-folder=local-conan-install/vscompiler",
+                "--output-folder=conan-install/vscompiler",
+                "--settings='build_type=Release'",
+                "--build=missing"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        }
+    ]
+}

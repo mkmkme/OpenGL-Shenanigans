@@ -1,0 +1,9 @@
+[requires]
+sdl/[^2.26.1]
+
+[generators]
+CMakeToolchain
+CMakeDeps
+
+[layout]
+cmake_layout
