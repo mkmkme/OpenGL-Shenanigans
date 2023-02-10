@@ -2,11 +2,11 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "EmptyWindow",
+            "name": "1.1-empty-window",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/vscompiler/src/Debug/empty-window.exe",
+            "program": "${workspaceRoot}/build/vscompiler/src/Debug/1.1-empty-window.exe",
             "console": "integratedTerminal"
-        }
+        },
     ]
 }
