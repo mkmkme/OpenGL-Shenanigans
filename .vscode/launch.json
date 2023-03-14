@@ -5,7 +5,15 @@
             "name": "1.1-empty-window",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/vscompiler/src/Debug/1.1-empty-window.exe",
+            "program": "${workspaceRoot}/build/msvc/src/Debug/1.1-empty-window.exe",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "1.2-hello-triangle",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/msvc/src/Debug/1.2-hello-triangle.exe",
+            "cwd": "${workspaceRoot}/src",
             "console": "integratedTerminal"
         },
     ]

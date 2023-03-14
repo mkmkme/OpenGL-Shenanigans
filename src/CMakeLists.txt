@@ -6,3 +6,6 @@ target_link_libraries(1-common PUBLIC gui)
 
 add_executable(1.1-empty-window 1.1-empty-window.cpp)
 target_link_libraries(1.1-empty-window 1-common)
+
+add_executable(1.2-hello-triangle 1.2-hello-triangle.cpp)
+target_link_libraries(1.2-hello-triangle 1-common)
