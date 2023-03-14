@@ -1,3 +1,2 @@
-/.vs
 /build
-/conan-install
+/ConanPresets.json

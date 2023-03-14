@@ -1,5 +1,7 @@
 #include "1-common.h"
 
+#include <glad/glad.h>
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
     WindowBoilerplate().run([] {

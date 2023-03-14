@@ -6,21 +6,14 @@
         {
             "label": "Conan install",
             "type": "shell",
-            "command": "conan",
+            "command": "${workspaceFolder}/ConanInstall.bat",
             "args": [
-                "install",
                 "${workspaceFolder}",
-                "--profile:host=default",
-                "--profile:build=default",
-                "--install-folder=local-conan-install/vscompiler",
-                "--output-folder=conan-install/vscompiler",
-                "--settings='build_type=Release'",
-                "--build=missing"
             ],
             "problemMatcher": [],
             "group": {
                 "kind": "build"
-            }
+            },
         }
     ]
 }
