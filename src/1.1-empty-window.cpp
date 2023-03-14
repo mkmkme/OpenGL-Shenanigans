@@ -4,7 +4,7 @@
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
-    WindowBoilerplate().run([] {
+    WindowBoilerplate().run([]([[maybe_unused]] const auto &shaderData) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
     });
