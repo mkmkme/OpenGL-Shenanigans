@@ -13,7 +13,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceRoot}/build/msvc/Debug/1.2-hello-triangle.exe",
-            "cwd": "${workspaceRoot}/src",
+            "cwd": "${workspaceRoot}/src/1.2-hello-triangle",
             "console": "integratedTerminal"
         },
     ]
