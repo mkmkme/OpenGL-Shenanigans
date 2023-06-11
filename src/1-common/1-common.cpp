@@ -108,7 +108,7 @@ WindowBoilerplate &WindowBoilerplate::withShaders(const char *argv0)
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
-    _shaderData.emplace(shaderProgram, 0, 0);
+    _shaderData.emplace(shaderProgram);
 
     return *this;
 }

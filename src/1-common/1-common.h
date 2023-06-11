@@ -9,6 +9,7 @@ struct WindowBoilerplate {
         unsigned shaderProgram {};
         unsigned VAO {};
         unsigned VBO {};
+        unsigned EBO {};
     };
 
     WindowBoilerplate();
