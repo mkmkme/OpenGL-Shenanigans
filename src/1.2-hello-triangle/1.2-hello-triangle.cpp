@@ -1,12 +1,13 @@
 #include "1-common.h"
 
+#include <array>
 #include <glad/glad.h>
 #include <span>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
     // clang-format off
-    constexpr float vertices[] = {
+    constexpr std::array vertices = {
         -0.5f, -0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
          0.0f,  0.5f, 0.0f,
