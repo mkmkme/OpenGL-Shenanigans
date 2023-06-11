@@ -1,10 +1,9 @@
 #include "1-common.h"
 
-#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <glad/glad.h>
-#include <iostream>
+#include <stdexcept>
 
 WindowBoilerplate::WindowBoilerplate()
 {
@@ -12,17 +11,23 @@ WindowBoilerplate::WindowBoilerplate()
     window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
     context = SDL_GL_CreateContext(window);
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-        std::cerr << "Failed to initialize glad!" << std::endl;
-        assert(false);
+        throw std::runtime_error("Failed to initialize glad!");
     }
 }
 
 WindowBoilerplate::~WindowBoilerplate()
 {
-    if (_shaderData.has_value()) {
-        glDeleteVertexArrays(1, &_shaderData->VAO);
-        glDeleteBuffers(1, &_shaderData->VBO);
-        glDeleteProgram(_shaderData->shaderProgram);
+    for (const auto &shaderProgram : _shaderPrograms) {
+        glDeleteProgram(shaderProgram);
+    }
+    if (!_VAOs.empty()) {
+        glDeleteVertexArrays(static_cast<GLsizei>(_VAOs.size()), _VAOs.data());
+    }
+    if (!_VBOs.empty()) {
+        glDeleteBuffers(static_cast<GLsizei>(_VBOs.size()), _VBOs.data());
+    }
+    if (!_EBOs.empty()) {
+        glDeleteBuffers(static_cast<GLsizei>(_EBOs.size()), _EBOs.data());
     }
 
     SDL_GL_DeleteContext(context);
@@ -37,15 +42,26 @@ bool process_input()
 }
 } // namespace
 
-void WindowBoilerplate::run(std::function<void(const std::optional<ShaderData> &)> &&render_function)
+void WindowBoilerplate::run(std::function<void()> &&render_function)
 {
     while (true) {
         if (process_input()) {
-            std::cout << "Goodbye!" << std::endl;
             return;
         }
 
-        render_function(_shaderData);
+        render_function();
+        SDL_GL_SwapWindow(window);
+    }
+}
+
+void WindowBoilerplate::run(render_cb_t &&render_function)
+{
+    while (true) {
+        if (process_input()) {
+            return;
+        }
+
+        render_function(_shaderPrograms, _VAOs);
         SDL_GL_SwapWindow(window);
     }
 }
@@ -54,67 +70,80 @@ namespace {
 std::string drainFile(const std::filesystem::path &path)
 {
     auto file = std::ifstream(path);
-    assert(file);
 
     return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }
-} // namespace
 
-WindowBoilerplate &WindowBoilerplate::withShaders(const char *argv0)
+char infoLog[512];
+void ensureShaderCompilationSuccess(unsigned shader, const std::string &shaderName)
 {
-    auto arg0 = std::filesystem::path(argv0).filename();
-    const auto vert_shader_source = drainFile(arg0.replace_extension(".vert"));
-    const auto frag_shader_source = drainFile(arg0.replace_extension(".frag"));
-
-    auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    const auto *cstr = vert_shader_source.c_str();
-    std::cout << "vertex_shader content: " << cstr << std::endl;
-    glShaderSource(vertex_shader, 1, &cstr, nullptr);
-    glCompileShader(vertex_shader);
-
     int success;
-    char infoLog[512];
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(vertex_shader, 512, nullptr, infoLog);
-        std::cerr << "Failed to compile vertex shader: " << infoLog << std::endl;
-        assert(false);
+        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+        throw std::runtime_error("Failed to compile " + shaderName + ": " + infoLog);
     }
+}
 
-    auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    cstr = frag_shader_source.c_str();
-    std::cout << "frag_shader content: " << cstr << std::endl;
-    glShaderSource(fragment_shader, 1, &cstr, nullptr);
-    glCompileShader(fragment_shader);
-
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragment_shader, 512, nullptr, infoLog);
-        std::cerr << "Failed to compile fragment shader: " << infoLog << std::endl;
-        assert(false);
-    }
-
-    const auto shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertex_shader);
-    glAttachShader(shaderProgram, fragment_shader);
-    glLinkProgram(shaderProgram);
-
+void ensureShaderLinkingSuccess(unsigned shaderProgram, const std::string &shaderProgramName)
+{
+    int success;
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::cerr << "Failed to link shader program: " << infoLog << std::endl;
-        assert(false);
+        throw std::runtime_error("Failed to link " + shaderProgramName + ": " + infoLog);
     }
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
+}
+} // namespace
 
-    _shaderData.emplace(shaderProgram);
+WindowBoilerplate &WindowBoilerplate::addShaderProgram(
+    const std::string &vertexShaderFile, const std::string &fragmentShaderFile
+)
+{
+    const auto vertexShaderSource = drainFile(vertexShaderFile);
+    const auto fragmentShaderSource = drainFile(fragmentShaderFile);
+
+    unsigned vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const auto *cstr = vertexShaderSource.c_str();
+    glShaderSource(vertexShader, 1, &cstr, nullptr);
+    glCompileShader(vertexShader);
+    ensureShaderCompilationSuccess(vertexShader, vertexShaderFile);
+
+    unsigned fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    cstr = fragmentShaderSource.c_str();
+    glShaderSource(fragmentShader, 1, &cstr, nullptr);
+    glCompileShader(fragmentShader);
+    ensureShaderCompilationSuccess(fragmentShader, fragmentShaderFile);
+
+    unsigned shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    ensureShaderLinkingSuccess(shaderProgram, vertexShaderFile + " + " + fragmentShaderFile);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    _shaderPrograms.push_back(shaderProgram);
 
     return *this;
 }
 
-WindowBoilerplate &WindowBoilerplate::withVertices(std::function<void(ShaderData &)> &&vertex_setup)
+WindowBoilerplate &WindowBoilerplate::generateObjects(size_t numVAOs, size_t numVBOs, size_t numEBOs) noexcept
 {
-    vertex_setup(_shaderData.value());
+    _VAOs.resize(numVAOs);
+    _VBOs.resize(numVBOs);
+    _EBOs.resize(numEBOs);
+
+    glGenVertexArrays(static_cast<GLsizei>(numVAOs), _VAOs.data());
+    glGenBuffers(static_cast<GLsizei>(numVBOs), _VBOs.data());
+    glGenBuffers(static_cast<GLsizei>(numEBOs), _EBOs.data());
+
+    return *this;
+}
+
+WindowBoilerplate &WindowBoilerplate::setUpBuffers(setup_buffers_cb_t &&setupBuffersCallback) noexcept
+{
+    setupBuffersCallback(_VAOs, _VBOs, _EBOs);
     return *this;
 }

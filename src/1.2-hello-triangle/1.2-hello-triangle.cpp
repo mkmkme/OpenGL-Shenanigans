@@ -1,10 +1,11 @@
 #include "1-common.h"
 
 #include <array>
+#include <filesystem>
 #include <glad/glad.h>
 #include <span>
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
+int main([[maybe_unused]] int argc, char *argv[])
 {
     // clang-format off
     constexpr std::array vertices = {
@@ -19,24 +20,25 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
     };
     // clang-format on
 
+    const auto programName = std::filesystem::path(argv[0]).filename().replace_extension().string();
+    const auto vertexShaderPath = programName + ".vert";
+    const auto fragmentShaderPath = programName + ".frag";
+
     WindowBoilerplate()
-        .withShaders(argv[0])
-        .withVertices([vertices = std::span { vertices }, indices = std::span { indices }](auto &shaderData) {
-            glGenVertexArrays(1, &shaderData.VAO);
-            glGenBuffers(1, &shaderData.VBO);
-            glGenBuffers(1, &shaderData.EBO);
+        .addShaderProgram(vertexShaderPath, fragmentShaderPath)
+        .generateObjects(1, 1, 1)
+        .setUpBuffers([vertices = std::span { vertices }, indices = std::span { indices }](
+                          const WindowBoilerplate::vaos_t &VAOs, const WindowBoilerplate::vbos_t &VBOs,
+                          const WindowBoilerplate::ebos_t &EBOs
+                      ) {
+            // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // uncomment this call to draw in wireframe polygons.
 
-// #define WIREFRAME_MODE
-#ifdef WIREFRAME_MODE
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-#endif
+            glBindVertexArray(VAOs[0]);
 
-            glBindVertexArray(shaderData.VAO);
-
-            glBindBuffer(GL_ARRAY_BUFFER, shaderData.VBO);
+            glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
             glBufferData(GL_ARRAY_BUFFER, vertices.size_bytes(), vertices.data(), GL_STATIC_DRAW);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shaderData.EBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size_bytes(), indices.data(), GL_STATIC_DRAW);
 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
@@ -45,12 +47,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
         })
-        .run([](const auto &shaderData) {
+        .run([](const WindowBoilerplate::shaders_t &shaderPrograms, const WindowBoilerplate::vaos_t &VAOs) {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            glUseProgram(shaderData->shaderProgram);
-            glBindVertexArray(shaderData->VAO);
+            glUseProgram(shaderPrograms[0]);
+            glBindVertexArray(VAOs[0]);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
         });
