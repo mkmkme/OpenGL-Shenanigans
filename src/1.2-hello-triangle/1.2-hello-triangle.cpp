@@ -1,9 +1,12 @@
-#include "1-common.h"
+
 
 #include <array>
 #include <filesystem>
 #include <glad/glad.h>
 #include <span>
+
+import WindowBoilerplate;
+
 
 int main([[maybe_unused]] int argc, char *argv[])
 {

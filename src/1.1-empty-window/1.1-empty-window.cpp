@@ -1,6 +1,8 @@
-#include "1-common.h"
 
 #include <glad/glad.h>
+
+import WindowBoilerplate;
+
 
 int main()
 {
