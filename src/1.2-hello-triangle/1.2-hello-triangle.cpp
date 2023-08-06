@@ -20,7 +20,11 @@ int main([[maybe_unused]] int argc, char *argv[])
     };
     // clang-format on
 
+#ifdef _WIN32
     const auto programName = std::filesystem::path(argv[0]).filename().replace_extension().string();
+#else
+    const auto programName = std::filesystem::path(argv[0]).filename().string();
+#endif
     const auto vertexShaderPath = programName + ".vert";
     const auto fragmentShaderPath = programName + ".frag";
 

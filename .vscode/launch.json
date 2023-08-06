@@ -3,17 +3,27 @@
     "configurations": [
         {
             "name": "1.1-empty-window",
-            "type": "cppvsdbg",
+            "type": "cppdbg",
+            "MIMode": "lldb",
             "request": "launch",
-            "program": "${workspaceRoot}/build/msvc/Debug/1.1-empty-window.exe",
+            "program": "${workspaceRoot}/build/apple-clang/Debug/1.1-empty-window",
+            "windows": {
+                "program": "${workspaceRoot}/build/msvc/Debug/1.1-empty-window.exe",
+                "type": "cppvsdbg",
+            },
             "console": "integratedTerminal"
         },
         {
             "name": "1.2-hello-triangle",
-            "type": "cppvsdbg",
+            "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/msvc/Debug/1.2-hello-triangle.exe",
+            "program": "${workspaceRoot}/build/apple-clang/Debug/1.2-hello-triangle",
+            "windows": {
+                "program": "${workspaceRoot}/build/msvc/Debug/1.2-hello-triangle.exe",
+                "type": "cppvsdbg",
+            },
             "cwd": "${workspaceRoot}/src/1.2-hello-triangle",
+            "MIMode": "lldb",
             "console": "integratedTerminal"
         },
     ]

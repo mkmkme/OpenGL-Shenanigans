@@ -3,11 +3,13 @@
 #include <filesystem>
 #include <fstream>
 #include <glad/glad.h>
+#include <iostream>
 #include <stdexcept>
 
 WindowBoilerplate::WindowBoilerplate()
 {
     SDL_Init(SDL_INIT_VIDEO);
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
     window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
     context = SDL_GL_CreateContext(window);
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
@@ -105,12 +107,14 @@ WindowBoilerplate &WindowBoilerplate::addShaderProgram(
 
     unsigned vertexShader = glCreateShader(GL_VERTEX_SHADER);
     const auto *cstr = vertexShaderSource.c_str();
+    std::cout << cstr << std::endl;
     glShaderSource(vertexShader, 1, &cstr, nullptr);
     glCompileShader(vertexShader);
     ensureShaderCompilationSuccess(vertexShader, vertexShaderFile);
 
     unsigned fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     cstr = fragmentShaderSource.c_str();
+    std::cout << cstr << std::endl;
     glShaderSource(fragmentShader, 1, &cstr, nullptr);
     glCompileShader(fragmentShader);
     ensureShaderCompilationSuccess(fragmentShader, fragmentShaderFile);
