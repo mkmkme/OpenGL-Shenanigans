@@ -5,8 +5,8 @@
 #include <glad/glad.h>
 #include <span>
 
+import ResourceUtils;
 import WindowBoilerplate;
-
 
 int main([[maybe_unused]] int argc, char *argv[])
 {
@@ -23,29 +23,21 @@ int main([[maybe_unused]] int argc, char *argv[])
     };
     // clang-format on
 
-#ifdef _WIN32
-    const auto programName = std::filesystem::path(argv[0]).filename().replace_extension().string();
-#else
-    const auto programName = std::filesystem::path(argv[0]).filename().string();
-#endif
-    const auto vertexShaderPath = programName + ".vert";
-    const auto fragmentShaderPath = programName + ".frag";
+    const auto [vertexShaderPath, fragmentShaderPath] = Resources::shaderFiles(argv[0]);
 
     WindowBoilerplate()
-        .addShaderProgram(vertexShaderPath, fragmentShaderPath)
-        .generateObjects(1, 1, 1)
+        .addShader(vertexShaderPath, fragmentShaderPath)
+        .generateObjects()
         .setUpBuffers([vertices = std::span { vertices }, indices = std::span { indices }](
                           const WindowBoilerplate::vaos_t &VAOs, const WindowBoilerplate::vbos_t &VBOs,
                           const WindowBoilerplate::ebos_t &EBOs
                       ) {
-            // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // uncomment this call to draw in wireframe polygons.
+            glBindVertexArray(VAOs.front());
 
-            glBindVertexArray(VAOs[0]);
-
-            glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+            glBindBuffer(GL_ARRAY_BUFFER, VBOs.front());
             glBufferData(GL_ARRAY_BUFFER, vertices.size_bytes(), vertices.data(), GL_STATIC_DRAW);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs.front());
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size_bytes(), indices.data(), GL_STATIC_DRAW);
 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
@@ -54,12 +46,12 @@ int main([[maybe_unused]] int argc, char *argv[])
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
         })
-        .run([](const WindowBoilerplate::shaders_t &shaderPrograms, const WindowBoilerplate::vaos_t &VAOs) {
+        .run([](const WindowBoilerplate &window) {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            glUseProgram(shaderPrograms[0]);
-            glBindVertexArray(VAOs[0]);
+            window.shaders().front().use();
+            glBindVertexArray(window.VAOs().front());
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
         });

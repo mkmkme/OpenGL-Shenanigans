@@ -14,27 +14,21 @@ endif()
 
 find_package(glad REQUIRED)
 find_package(SDL2 REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(Stb REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-set(modules_list src/1-common/WindowBoilerplate.cppm src/1-common/WindowBoilerplate.Utils.cppm)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders RESULT result)
 
-add_executable(1.1-hello-window)
-target_sources(1.1-hello-window PRIVATE
-        FILE_SET all_my_modules TYPE CXX_MODULES
-        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/1-common
-        FILES ${modules_list}
-)
+if(result)
+    message(WARNING "Failed to create directory ${CMAKE_BINARY_DIR}/shaders")
+endif()
 
-target_sources(1.1-hello-window PRIVATE src/1.1-empty-window/1.1-empty-window.cpp)
-target_link_libraries(1.1-hello-window PRIVATE glad::glad SDL2::SDL2)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/textures RESULT result)
 
-add_executable(1.2-hello-triangle)
-target_sources(1.2-hello-triangle PRIVATE
-        FILE_SET all_my_modules TYPE CXX_MODULES
-        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/1-common
-        FILES ${modules_list}
-)
+if(result)
+    message(WARNING "Failed to create directory ${CMAKE_BINARY_DIR}/textures")
+endif()
 
-target_sources(1.2-hello-triangle PRIVATE src/1.2-hello-triangle/1.2-hello-triangle.cpp)
-target_link_libraries(1.2-hello-triangle PRIVATE glad::glad SDL2::SDL2)
+add_subdirectory(src)
