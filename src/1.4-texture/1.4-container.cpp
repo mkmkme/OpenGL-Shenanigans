@@ -1,11 +1,11 @@
+#include "Resources.h"
+#include "WindowBoilerplate.h"
+
 #include <SDL_scancode.h>
 #include <array>
 #include <fmt/base.h>
 #include <glad/glad.h>
 #include <span>
-
-import ResourceUtils;
-import WindowBoilerplate;
 
 int main([[maybe_unused]] int argc, char *argv[])
 {
@@ -29,8 +29,14 @@ int main([[maybe_unused]] int argc, char *argv[])
 
     WindowBoilerplate()
         .addShader(vertexShaderPath, fragmentShaderPath)
-        .addTexture(texturePath, GL_RGB, GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
-        .addTexture(texturePath2, GL_RGBA, GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
+        .addTexture(
+            texturePath, Texture::Format::RGB, Texture::Wrap::Repeat, Texture::Wrap::Repeat,
+            Texture::Filter::LinearMipmapLinear, Texture::Filter::Linear
+        )
+        .addTexture(
+            texturePath2, Texture::Format::RGBA, Texture::Wrap::Repeat, Texture::Wrap::Repeat,
+            Texture::Filter::LinearMipmapLinear, Texture::Filter::Linear
+        )
         .generateObjects()
         .setUpBuffers([vertices = std::span { vertices }, indices = std::span { indices }](
                           const WindowBoilerplate::vaos_t &VAOs, const WindowBoilerplate::vbos_t &VBOs,

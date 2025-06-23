@@ -1,10 +1,13 @@
+#include "Resources.h"
+#include "WindowBoilerplate.h"
+
 #include <array>
+#include <chrono>
+#include <cmath>
 #include <fmt/base.h>
 #include <glad/glad.h>
+#include <glm/vec4.hpp>
 #include <span>
-
-import ResourceUtils;
-import WindowBoilerplate;
 
 int main([[maybe_unused]] int argc, char *argv[])
 {

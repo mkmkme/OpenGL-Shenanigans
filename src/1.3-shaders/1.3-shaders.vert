@@ -1,4 +1,7 @@
 #version 330 core
+
+out gl_PerVertex { vec4 gl_Position; };
+
 layout (location = 0) in vec3 aPos;
 
 void main()

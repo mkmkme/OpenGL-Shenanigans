@@ -1,12 +1,10 @@
-
+#include "Resources.h"
+#include "WindowBoilerplate.h"
 
 #include <array>
 #include <filesystem>
 #include <glad/glad.h>
 #include <span>
-
-import ResourceUtils;
-import WindowBoilerplate;
 
 int main([[maybe_unused]] int argc, char *argv[])
 {
