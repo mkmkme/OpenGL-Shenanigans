@@ -107,24 +107,36 @@ int main([[maybe_unused]] int argc, char *argv[])
             const auto &shader = window.shaders().front();
             const auto &textures = window.textures();
 
-            const auto now = std::chrono::system_clock::now();
-            const auto time = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
-
-            auto transform = glm::mat4(1.0f);
-            transform = glm::translate(transform, glm::vec3(x_position, -0.5f, 0.0f));
-            transform = glm::rotate(transform, glm::radians(time / 10.f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            shader.use();
-            shader.setUniformInt("texture1", 0);
-            shader.setUniformInt("texture2", 1);
-            shader.setUniformMat4("transform", transform);
-
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textures[0].id());
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, textures[1].id());
 
+            shader.use();
+            shader.setUniformInt("texture1", 0);
+            shader.setUniformInt("texture2", 1);
+
+            const auto now = std::chrono::system_clock::now();
+            const auto time = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+
+            // first rectangle
+            auto transform = glm::mat4(1.0f);
+            transform = glm::translate(transform, glm::vec3(x_position, -0.5f, 0.0f));
+            transform = glm::rotate(transform, glm::radians(time / 10.f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            shader.setUniformMat4("transform", transform);
+
             glBindVertexArray(window.VAOs().front());
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+            // second rectangle
+            transform = glm::mat4(1.0f);
+            transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
+            // NOTE: negative scale inverses the object, set abs to prevent that
+            const auto scale_factor = std::sin(time / 250.f);
+            transform = glm::scale(transform, glm::vec3(scale_factor, scale_factor, scale_factor));
+            shader.setUniformMat4("transform", transform);
+
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         });
 
