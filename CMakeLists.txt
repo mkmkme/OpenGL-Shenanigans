@@ -12,6 +12,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options("-fdiagnostics-color=always")
 endif()
 
+include(cmake/copy-resources.cmake)
+
 find_package(glad REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(fmt CONFIG REQUIRED)
@@ -19,16 +21,6 @@ find_package(Stb REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders RESULT result)
-
-if(result)
-    message(WARNING "Failed to create directory ${CMAKE_BINARY_DIR}/shaders")
-endif()
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/textures RESULT result)
-
-if(result)
-    message(WARNING "Failed to create directory ${CMAKE_BINARY_DIR}/textures")
-endif()
+prepare_dirs()
 
 add_subdirectory(src)
