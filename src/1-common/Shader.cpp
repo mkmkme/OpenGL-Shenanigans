@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/vec4.hpp>
 
 namespace {
@@ -79,12 +80,12 @@ void Shader::use() const
     glUseProgram(_shaderProgram);
 }
 
-void Shader::setUniformBool(std::string_view name, bool value) const
+void Shader::setUniformBool(std::string_view name, bool value) const noexcept
 {
     glUniform1i(glGetUniformLocation(_shaderProgram, name.data()), value);
 }
 
-void Shader::setUniformInt(std::string_view name, int value) const
+void Shader::setUniformInt(std::string_view name, int value) const noexcept
 {
     glUniform1i(glGetUniformLocation(_shaderProgram, name.data()), value);
 }
@@ -96,12 +97,17 @@ float Shader::getUniformFloat(std::string_view name) const noexcept
     return value;
 }
 
-void Shader::setUniformFloat(std::string_view name, float value) const
+void Shader::setUniformFloat(std::string_view name, float value) const noexcept
 {
     glUniform1f(glGetUniformLocation(_shaderProgram, name.data()), value);
 }
 
-void Shader::setUniformVec4(std::string_view name, const glm::vec4 &value) const
+void Shader::setUniformVec4(std::string_view name, const glm::vec4 &value) const noexcept
 {
     glUniform4f(glGetUniformLocation(_shaderProgram, name.data()), value.r, value.g, value.b, value.a);
+}
+
+void Shader::setUniformMat4(std::string_view name, const glm::mat4 &value) const noexcept
+{
+    glUniformMatrix4fv(glGetUniformLocation(_shaderProgram, name.data()), 1, GL_FALSE, glm::value_ptr(value));
 }

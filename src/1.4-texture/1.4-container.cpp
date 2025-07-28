@@ -5,6 +5,8 @@
 #include <array>
 #include <fmt/base.h>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <span>
 
 int main([[maybe_unused]] int argc, char *argv[])
@@ -26,6 +28,9 @@ int main([[maybe_unused]] int argc, char *argv[])
 
     const auto texturePath = Resources::textureDir(argv[0]) / "1.4-container.jpg";
     const auto texturePath2 = Resources::textureDir(argv[0]) / "1.4-awesome.png";
+
+    const auto start = std::chrono::system_clock::now();
+    float x_position = 0.0f;
 
     WindowBoilerplate()
         .addShader(vertexShaderPath, fragmentShaderPath)
@@ -51,12 +56,11 @@ int main([[maybe_unused]] int argc, char *argv[])
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size_bytes(), indices.data(), GL_STATIC_DRAW);
 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
-            glEnableVertexAttribArray(0);
-
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
             glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
             glEnableVertexAttribArray(2);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -82,16 +86,38 @@ int main([[maybe_unused]] int argc, char *argv[])
                 return false;
             }
         )
-        .run([](const WindowBoilerplate &window) {
+        .addKeyCallback(
+            SDLK_LEFT,
+            [&x_position](WindowBoilerplate &window) {
+                x_position -= 0.1f;
+                return false;
+            }
+        )
+        .addKeyCallback(
+            SDLK_RIGHT,
+            [&x_position](WindowBoilerplate &window) {
+                x_position += 0.1f;
+                return false;
+            }
+        )
+        .run([start, &x_position](const WindowBoilerplate &window) {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             const auto &shader = window.shaders().front();
             const auto &textures = window.textures();
 
+            const auto now = std::chrono::system_clock::now();
+            const auto time = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+
+            auto transform = glm::mat4(1.0f);
+            transform = glm::translate(transform, glm::vec3(x_position, -0.5f, 0.0f));
+            transform = glm::rotate(transform, glm::radians(time / 10.f), glm::vec3(0.0f, 0.0f, 1.0f));
+
             shader.use();
             shader.setUniformInt("texture1", 0);
             shader.setUniformInt("texture2", 1);
+            shader.setUniformMat4("transform", transform);
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textures[0].id());
