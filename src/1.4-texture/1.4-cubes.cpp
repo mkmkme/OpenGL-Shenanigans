@@ -95,7 +95,7 @@ int main([[maybe_unused]] int argc, char *argv[])
         .generateObjects()
         .setUpBuffers([vertices = std::span { vertices }](
                           const WindowBoilerplate::vaos_t &VAOs, const WindowBoilerplate::vbos_t &VBOs,
-                          const WindowBoilerplate::ebos_t &EBOs
+                          const WindowBoilerplate::ebos_t &
                       ) {
             glEnable(GL_DEPTH_TEST);
 
@@ -135,84 +135,84 @@ int main([[maybe_unused]] int argc, char *argv[])
         )
         .addKeyCallback(
             'a',
-            [&viewCoords](WindowBoilerplate &window) {
+            [&viewCoords](WindowBoilerplate &) {
                 viewCoords.x -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'd',
-            [&viewCoords](WindowBoilerplate &window) {
+            [&viewCoords](WindowBoilerplate &) {
                 viewCoords.x += 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             's',
-            [&viewCoords](WindowBoilerplate &window) {
+            [&viewCoords](WindowBoilerplate &) {
                 viewCoords.y -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'w',
-            [&viewCoords](WindowBoilerplate &window) {
+            [&viewCoords](WindowBoilerplate &) {
                 viewCoords.y += 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'e',
-            [&viewCoords](WindowBoilerplate &window) {
+            [&viewCoords](WindowBoilerplate &) {
                 viewCoords.z -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'r',
-            [&viewCoords](WindowBoilerplate &window) {
+            [&viewCoords](WindowBoilerplate &) {
                 viewCoords.z += 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'j',
-            [&rotateCoords](WindowBoilerplate &window) {
+            [&rotateCoords](WindowBoilerplate &) {
                 rotateCoords.x -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'l',
-            [&rotateCoords](WindowBoilerplate &window) {
+            [&rotateCoords](WindowBoilerplate &) {
                 rotateCoords.x += 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'i',
-            [&rotateCoords](WindowBoilerplate &window) {
+            [&rotateCoords](WindowBoilerplate &) {
                 rotateCoords.y += 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'k',
-            [&rotateCoords](WindowBoilerplate &window) {
+            [&rotateCoords](WindowBoilerplate &) {
                 rotateCoords.y -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'o',
-            [&rotateCoords](WindowBoilerplate &window) {
+            [&rotateCoords](WindowBoilerplate &) {
                 rotateCoords.z -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             'p',
-            [&rotateCoords](WindowBoilerplate &window) {
+            [&rotateCoords](WindowBoilerplate &) {
                 rotateCoords.z += 0.1f;
                 return false;
             }

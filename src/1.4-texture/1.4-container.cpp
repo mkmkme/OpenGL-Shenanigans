@@ -88,14 +88,14 @@ int main([[maybe_unused]] int argc, char *argv[])
         )
         .addKeyCallback(
             SDLK_LEFT,
-            [&x_position](WindowBoilerplate &window) {
+            [&x_position](WindowBoilerplate &) {
                 x_position -= 0.1f;
                 return false;
             }
         )
         .addKeyCallback(
             SDLK_RIGHT,
-            [&x_position](WindowBoilerplate &window) {
+            [&x_position](WindowBoilerplate &) {
                 x_position += 0.1f;
                 return false;
             }
