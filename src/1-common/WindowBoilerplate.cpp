@@ -152,6 +152,10 @@ bool WindowBoilerplate::processInput()
                     _pitch = std::clamp(_pitch, -89.f, 89.f);
                 }
                 return false;
+            case SDL_MOUSEWHEEL:
+                _fov -= windowEvent.wheel.y;
+                _fov = std::clamp(_fov, 1.f, 45.f);
+                return false;
         }
     }
     return false;

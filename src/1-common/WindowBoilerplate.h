@@ -7,6 +7,7 @@
 #include <SDL2/SDL_video.h>
 #include <functional>
 #include <glm/vec2.hpp>
+#include <unordered_map>
 #include <vector>
 
 class WindowBoilerplate {
@@ -31,6 +32,7 @@ public:
 
     [[nodiscard]] float pitch() const noexcept { return _pitch; }
     [[nodiscard]] float yaw() const noexcept { return _yaw; }
+    [[nodiscard]] float fov() const noexcept { return _fov; }
 
     const vaos_t &VAOs() const { return _VAOs; }
     const vbos_t &VBOs() const { return _VBOs; }
@@ -75,6 +77,7 @@ private:
 
     float _yaw = -90.f;
     float _pitch = 0.0f;
+    float _fov = 45.f;
 
     std::unordered_map<SDL_Keycode, handle_key_cb_t> _keyCallbacks {};
 

@@ -239,8 +239,9 @@ int main([[maybe_unused]] int argc, char *argv[])
             cameraFront = glm::normalize(direction);
             auto view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-            auto projection =
-                glm::perspective(glm::radians(45.f), window.width() / static_cast<float>(window.height()), 0.1f, 100.f);
+            auto projection = glm::perspective(
+                glm::radians(window.fov()), window.width() / static_cast<float>(window.height()), 0.1f, 100.f
+            );
 
             shader.setUniformMat4("view", view);
             shader.setUniformMat4("projection", projection);
