@@ -6,11 +6,12 @@
 #include <fmt/format.h>
 #include <glad/glad.h>
 
-WindowBoilerplate::WindowBoilerplate()
+WindowBoilerplate::WindowBoilerplate(int width, int height)
 {
     SDL_Init(SDL_INIT_VIDEO);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+    window =
+        SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
     context = SDL_GL_CreateContext(window);
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
         throw std::runtime_error("Failed to initialize glad!");

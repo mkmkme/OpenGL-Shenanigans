@@ -19,8 +19,11 @@ public:
     using render_cb_t = std::function<void(WindowBoilerplate &)>;
     using handle_key_cb_t = std::function<bool(WindowBoilerplate &)>;
 
-    WindowBoilerplate();
+    WindowBoilerplate(int width = 1600, int height = 1200);
     ~WindowBoilerplate();
+
+    [[nodiscard]] int width() const noexcept { return SDL_GetWindowSurface(window)->w; }
+    [[nodiscard]] int height() const noexcept { return SDL_GetWindowSurface(window)->h; }
 
     const vaos_t &VAOs() const { return _VAOs; }
     const vbos_t &VBOs() const { return _VBOs; }
