@@ -1,5 +1,7 @@
 #include "WindowBoilerplate.h"
 
+#include <SDL_events.h>
+
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <SDL_keycode.h>
@@ -37,6 +39,10 @@ WindowBoilerplate::~WindowBoilerplate()
 void WindowBoilerplate::run(std::function<void()> &&renderCallback)
 {
     while (true) {
+        const auto now = SDL_GetTicks();
+        _deltaTime = now - _lastFrameTime;
+        _lastFrameTime = now;
+
         if (renderCommon()) {
             return;
         }
@@ -56,6 +62,10 @@ WindowBoilerplate &WindowBoilerplate::addKeyCallback(SDL_Keycode keycode, handle
 void WindowBoilerplate::run(render_cb_t &&renderCallback)
 {
     while (true) {
+        const auto now = SDL_GetTicks();
+        _deltaTime = now - _lastFrameTime;
+        _lastFrameTime = now;
+
         if (renderCommon()) {
             return;
         }
@@ -111,21 +121,38 @@ bool WindowBoilerplate::processInput()
             case SDL_KEYDOWN:
                 switch (windowEvent.key.keysym.sym) {
                     case SDLK_ESCAPE:
-                        return true;
                     case SDLK_q:
                         return true;
                     case SDLK_SPACE:
                         toggleWireframeMode();
-                        break;
+                        return false;
                     default:
                         if (auto it = _keyCallbacks.find(windowEvent.key.keysym.sym); it != _keyCallbacks.end()) {
-                            if (it->second(*this)) {
-                                return true;
-                            }
+                            return it->second(*this);
                         }
-                        break;
+                        return false;
                 }
                 break;
+            case SDL_MOUSEMOTION:
+                if (_firstMouseMove) {
+                    _mousePosition = glm::vec2(windowEvent.motion.x, windowEvent.motion.y);
+                    _firstMouseMove = false;
+                } else {
+                    const auto newMousePosition = glm::vec2(windowEvent.motion.x, windowEvent.motion.y);
+                    float xDelta = newMousePosition.x - _mousePosition.x;
+                    float yDelta = _mousePosition.y - newMousePosition.y;
+                    _mousePosition = newMousePosition;
+
+                    const float mouseSensitivity = 0.1f;
+                    xDelta *= mouseSensitivity;
+                    yDelta *= mouseSensitivity;
+
+                    _yaw += xDelta;
+                    _pitch += yDelta;
+                    _pitch = std::clamp(_pitch, -89.f, 89.f);
+                    fmt::println("yaw: {}, pitch: {}", _yaw, _pitch);
+                }
+                return false;
         }
     }
     return false;
