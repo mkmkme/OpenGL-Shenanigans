@@ -150,7 +150,6 @@ bool WindowBoilerplate::processInput()
                     _yaw += xDelta;
                     _pitch += yDelta;
                     _pitch = std::clamp(_pitch, -89.f, 89.f);
-                    fmt::println("yaw: {}, pitch: {}", _yaw, _pitch);
                 }
                 return false;
         }
